@@ -28,27 +28,30 @@ function GeoMap() {
   var drawRef = useRef();
 
   const onUpdate = useCallback((e) => {
-    setFeatures((currFeatures) => {
-      const newFeatures = { ...currFeatures };
-      for (const f of e.features) {
-        newFeatures[f.id] = f;
-      }
-      console.log("event", e);
-      console.log("e.features", e.features);
-      console.log("onUpdate newFeatures", newFeatures);
-      return newFeatures;
-    });
+    //setFeatures((currFeatures) => {
+    //  const newFeatures = { ...currFeatures };
+    //  for (const f of e.features) {
+    //    newFeatures[f.id] = f;
+    //  }
+    //  console.log("event", e);
+    //  console.log("e.features", e.features);
+    //  console.log("newFeatures", newFeatures);
+    //  //drawRef.current.set();
+    //  newFeatures.forEach((element) => {
+    //  })
+    //  return newFeatures;
+    //});
   }, []);
 
   const onDelete = useCallback((e) => {
-    setFeatures((currFeatures) => {
-      const newFeatures = { ...currFeatures };
-      for (const f of e.features) {
-        delete newFeatures[f.id];
-      }
-      console.log("onDelete newFeatures", newFeatures);
-      return newFeatures;
-    });
+    //setFeatures((currFeatures) => {
+    //  const newFeatures = { ...currFeatures };
+    //  for (const f of e.features) {
+    //    delete newFeatures[f.id];
+    //  }
+    //  console.log("onDelete newFeatures", newFeatures);
+    //  return newFeatures;
+    //});
   }, []);
 
   const DrawControl = (props) => {
