@@ -61,14 +61,14 @@ function GeoMap() {
         return draw;
       },
       ({ map }: { map: MapRef }) => {
-        //map.on("draw.create", props.onCreate);
-        //map.on("draw.update", props.onUpdate);
-        //map.on("draw.delete", props.onDelete);
+        map.on("draw.create", props.onCreate);
+        map.on("draw.update", props.onUpdate);
+        map.on("draw.delete", props.onDelete);
       },
       ({ map }: { map: MapRef }) => {
-        //map.off("draw.create", props.onCreate);
-        //map.off("draw.update", props.onUpdate);
-        //map.off("draw.delete", props.onDelete);
+        map.off("draw.create", props.onCreate);
+        map.off("draw.update", props.onUpdate);
+        map.off("draw.delete", props.onDelete);
       },
       { position: props.position }
     );
@@ -127,6 +127,31 @@ function GeoMap() {
     return <button onClick={changeMode}>ChangeModeButton</button>;
   };
 
+  const SetNewFeaturesButton = () => {
+    function setNewFeatures() {
+      try {
+        drawRef.current.set({
+          type: "FeatureCollection",
+          features: [
+            {
+              geometry: {
+                coordinates: [140.26203783007617, 35.85544730748673],
+                type: "Point",
+              },
+              id: "renderingPolygonTest",
+              properties: {},
+              type: "Feature",
+            },
+          ],
+        });
+        console.log("sucess!");
+      } catch (e) {
+        console.log(e);
+      }
+    }
+    return <button onClick={setNewFeatures}>SetNewFeaturesButton</button>;
+  };
+
   return (
     <>
       {true ? (
@@ -135,6 +160,7 @@ function GeoMap() {
           <GetSourceButton />
           <DrawPolygonButton />
           <ChangeModeButton />
+          <SetNewFeaturesButton />
           <Map
             style={{ width: "100vw", height: "100vh" }}
             initialViewState={{
