@@ -4,7 +4,6 @@ import {
   NavigationControl,
   MapProvider,
   useControl,
-  FullscreenControl,
 } from "react-map-gl";
 import { useRef, useCallback, useState } from "react";
 import "@aws-amplify/ui-react/styles.css";
@@ -20,12 +19,10 @@ import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import type { MapRef, ControlPosition } from "react-map-gl";
 import Mapbox from "react-map-gl/dist/esm/mapbox/mapbox";
 import maplibregl from "maplibre-gl";
-import DrawPolygon from "@mapbox/mapbox-gl-draw/src/modes/draw_polygon";
 
 function GeoMap() {
   const [features, setFeatures] = useState({});
-  var mapRef = useRef();
-  var drawRef = useRef();
+  const mapRef = useRef();
 
   const onUpdate = useCallback((e) => {
     setFeatures((currFeatures) => {
@@ -33,8 +30,6 @@ function GeoMap() {
       for (const f of e.features) {
         newFeatures[f.id] = f;
       }
-      console.log("event", e);
-      console.log("e.features", e.features);
       console.log("onUpdate newFeatures", newFeatures);
       return newFeatures;
     });
@@ -53,22 +48,16 @@ function GeoMap() {
 
   const DrawControl = (props) => {
     useControl<MapboxDraw>(
-      () => {
-        const draw = new MapboxDraw(props);
-        console.log("response", draw.modes);
-        drawRef.current = draw;
-        console.log("drawRef.current", drawRef.current);
-        return draw;
+      () => new MapboxDraw(props),
+      ({ map }: { map: MapRef }) => {
+        map.on("draw.create", props.onCreate);
+        map.on("draw.update", props.onUpdate);
+        map.on("draw.delete", props.onDelete);
       },
       ({ map }: { map: MapRef }) => {
-        //map.on("draw.create", props.onCreate);
-        //map.on("draw.update", props.onUpdate);
-        //map.on("draw.delete", props.onDelete);
-      },
-      ({ map }: { map: MapRef }) => {
-        //map.off("draw.create", props.onCreate);
-        //map.off("draw.update", props.onUpdate);
-        //map.off("draw.delete", props.onDelete);
+        map.off("draw.create", props.onCreate);
+        map.off("draw.update", props.onUpdate);
+        map.off("draw.delete", props.onDelete);
       },
       { position: props.position }
     );
@@ -100,7 +89,7 @@ function GeoMap() {
         const maphoge = mapRef.current.getMap();
         console.log("map", map);
         console.log("maphoge", maphoge);
-        const source = mapRef.current.getFeatureState({ source: "polygon" });
+        const source = mapRef.current.getFeatureState();
         console.log("source", source);
       } catch (e) {
         console.log(e);
@@ -113,28 +102,12 @@ function GeoMap() {
     return <button onClick={getSource}>GetSourceButton</button>;
   };
 
-  const DrawPolygonButton = () => {
-    function drawPolygon() {
-      console.log(DrawPolygon);
-    }
-    return <button onClick={drawPolygon}>DrawPolygonButton</button>;
-  };
-
-  const ChangeModeButton = () => {
-    function changeMode() {
-      drawRef.current.changeMode("draw_line_string");
-    }
-    return <button onClick={changeMode}>ChangeModeButton</button>;
-  };
-
   return (
     <>
       {true ? (
         <>
           <EventFireButton />
           <GetSourceButton />
-          <DrawPolygonButton />
-          <ChangeModeButton />
           <Map
             style={{ width: "100vw", height: "100vh" }}
             initialViewState={{
@@ -155,9 +128,10 @@ function GeoMap() {
               controls={{
                 polygon: true,
                 point: true,
+                uncombine_features: true,
                 trash: true,
               }}
-              defaultMode="simple_select"
+              defaultMode="draw_polygon"
               onCreate={onUpdate}
               onUpdate={onUpdate}
               onDelete={onDelete}
